@@ -1,0 +1,259 @@
+﻿@{
+    ViewBag.Title = "Attendance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="animated-background">
+    <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; position: relative; z-index: 10;">
+        <div class="card glass-card shadow-lg">
+
+            <div class="card-header border-0 text-center pt-4 bg-transparent">
+                <div class="icon-wrapper mb-2">
+                    <i class="fa-solid fa-user-astronaut fa-2x"></i>
+                </div>
+                <h3 class="fw-bold text-white tracking-wide">BlueSky Attendance</h3>
+                <p class="text-white-50 small">System Access Portal</p>
+            </div>
+
+            <div class="card-body p-4">
+
+                <div class="position-absolute top-0 end-0 p-3">
+                    <button id="btnRegister" class="btn btn-sm btn-link text-decoration-none text-info fw-bold">
+                        <i class="fa-solid fa-user-plus me-1"></i> New?
+                    </button>
+                </div>
+
+                <div class="mb-4 mt-2">
+                    <label class="form-label text-white fw-light small text-uppercase ls-1">Registration ID</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-end-0 text-white">
+                            <i class="fa-solid fa-id-card"></i>
+                        </span>
+                        <input type="text"
+                               id="regNo"
+                               class="form-control bg-transparent text-white border-start-0 custom-input"
+                               placeholder="e.g. BS-2024-001"
+                               autocomplete="off" />
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button id="btnMark" class="btn btn-gradient btn-lg text-white shadow fw-bold">
+                        <span class="btn-text">Mark Present</span>
+                        <i class="fa-solid fa-check-circle ms-2"></i>
+                    </button>
+                </div>
+
+                <div id="result" class="mt-4 text-center fw-semibold result-box" style="min-height: 25px;"></div>
+            </div>
+
+            <div class="card-footer border-0 bg-transparent text-center text-white-50 py-3">
+                <small>&copy; @DateTime.Now.Year BlueSky Systems</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* --- 1. Base & Fonts --- */
+    body, html {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        overflow: hidden; /* Prevents scrollbars from the animation */
+    }
+
+    /* --- 2. Animated Background --- */
+    .animated-background {
+        background: linear-gradient(to left, #0f2027, #203a43, #2c5364); /* Deep Space Gradient */
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite; /* Slow color shift */
+    }
+
+    /* Color Shift Animation */
+    @@keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    /* --- 3. Floating Particles (The Circles/Squares) --- */
+    .circles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        z-index: 1; /* Behind the card */
+    }
+
+    .circles li {
+        position: absolute;
+        display: block;
+        list-style: none;
+        width: 20px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        animation: floatUp 25s linear infinite;
+        bottom: -150px;
+        border-radius: 4px; /* Slight rounded corners (looks like tech chips) */
+        box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+    /* Randomize the particles */
+    .circles li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+    .circles li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+    .circles li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+    .circles li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+    .circles li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+    .circles li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+    .circles li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+    .circles li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+    .circles li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+    .circles li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+
+    /* The Upward Float Animation */
+    @@keyframes floatUp {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+            border-radius: 0;
+        }
+        100% {
+            transform: translateY(-1000px) rotate(720deg);
+            opacity: 0;
+            border-radius: 50%;
+        }
+    }
+
+    /* --- 4. Glass Card Styling --- */
+    .glass-card {
+        width: 100%;
+        max-width: 420px;
+        /* More transparency for the animation to show through */
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    /* --- 5. UI Elements --- */
+    .icon-wrapper { color: #00d2ff; text-shadow: 0 0 15px rgba(0, 210, 255, 0.6); }
+    .ls-1 { letter-spacing: 1px; }
+
+    /* Inputs */
+    .custom-input { border: 1px solid rgba(255,255,255,0.3); height: 50px; box-shadow: none !important; }
+    .custom-input:focus { background-color: rgba(255,255,255,0.1); border-color: #00d2ff; color: white; }
+    .input-group-text { border: 1px solid rgba(255,255,255,0.3); }
+    .form-control::placeholder { color: rgba(255,255,255,0.4); }
+
+    /* Buttons */
+    .btn-gradient {
+        background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+        border: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 25px rgba(0, 210, 255, 0.6);
+        color: white;
+    }
+    .btn-gradient:active { transform: scale(0.98); }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // [Existing Logic preserved]
+
+        $('#btnRegister').click(function (e) {
+            e.preventDefault();
+            var btn = $(this);
+            var originalHtml = btn.html();
+            btn.html('<i class="fa-solid fa-spinner fa-spin"></i>');
+
+            window.location.href = '@Url.Action("Index", "Student")';
+            @*$.ajax({
+                url: '@Url.Action("Index", "Student")',
+                type: 'GET',
+                success: function () {
+                     // Replace with actual redirect logic
+                     alert('Redirecting to Register...');
+                     btn.html(originalHtml);
+                },
+                error: function () {
+                    alert('Error loading registration');
+                    btn.html(originalHtml);
+                }
+            });*@
+        });
+
+        $('#btnMark').click(function () {
+            var btn = $(this);
+            var regNo = $('#regNo').val().trim();
+            var resultDiv = $('#result');
+
+            resultDiv.hide().removeClass('text-danger text-success');
+
+            if (regNo === '') {
+                resultDiv.text('Please enter Registration ID').addClass('text-danger').fadeIn();
+                // Add shake animation to card
+                $('.glass-card').addClass('border-danger');
+                setTimeout(() => $('.glass-card').removeClass('border-danger'), 500);
+                return;
+            }
+
+            var originalBtnText = btn.html();
+            btn.prop('disabled', true).html('<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...');
+
+            $.ajax({
+                url: '@Url.Action("MarkAttendance", "Attendance")',
+                type: 'POST',
+                data: { registrationNo: regNo },
+                success: function (response) {
+                    resultDiv.removeClass('text-danger').addClass('text-success')
+                             .html('<i class="fa-solid fa-check"></i> ' + response).fadeIn();
+                    $('#regNo').val('');
+                },
+                error: function () {
+                    resultDiv.removeClass('text-success').addClass('text-danger')
+                             .html('<i class="fa-solid fa-triangle-exclamation"></i> Failed').fadeIn();
+                },
+                complete: function() {
+                    btn.prop('disabled', false).html(originalBtnText);
+                }
+            });
+        });
+
+        $('#regNo').keypress(function(e){
+            if(e.which == 13) $('#btnMark').click();
+        });
+    });
+</script>
