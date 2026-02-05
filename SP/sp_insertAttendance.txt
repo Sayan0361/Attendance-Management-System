@@ -1,14 +1,43 @@
-﻿	create or alter	proc sp_insertAttendance
-		@studentID INT,
-		@status VARCHAR(100)
-
-	AS
-	BEGIN
-		insert into attendance(studentID,date,in_time,status)
-		values(@studentID,CAST(GETDATE() AS DATE), CAST(SYSDATETIME() AS TIME),@status)
-	end
-	go
-
-exec sp_insertAttendance
-	@studentID=2,
-	@status='ABSENT'
+﻿ALTER PROC [dbo].[sp_insertAttendance]
+    @studentID INT,
+    @status VARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+ 
+    -- Student must exist
+    IF NOT EXISTS (
+        SELECT 1
+        FROM dbo.student
+        WHERE id = @studentID
+    )
+    BEGIN
+        THROW 50001, 'No such student is there in our records!', 1;
+    END
+ 
+    -- No duplicate attendance
+    IF EXISTS (
+        SELECT 1
+        FROM dbo.attendance
+        WHERE studentID = @studentID
+          AND [date] = CAST(GETDATE() AS DATE)
+    )
+    BEGIN
+        THROW 50002, 'The student is already marked for today', 1;
+    END
+ 
+    -- Validate status
+    IF UPPER(@status) NOT IN ('PRESENT', 'LATE')
+    BEGIN
+        THROW 50003, 'Attendance status must be either PRESENT or LATE', 1;
+    END
+ 
+    -- Insert attendance
+    INSERT INTO dbo.attendance (studentID, [date], in_time, status)
+    VALUES (
+        @studentID,
+        CAST(GETDATE() AS DATE),
+        CAST(SYSDATETIME() AS TIME),
+        UPPER(@status)
+    );
+END;

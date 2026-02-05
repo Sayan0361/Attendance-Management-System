@@ -1,10 +1,37 @@
-﻿create or alter proc sp_InsertHashAndStudentID
-	@studentID int,
-	@hash varchar(300)
-as
-begin
-	insert into dbo.hashtable(studentID, hash)
-	values (@studentID, @hash)
-end;
-
-exec sp_InsertHashAndStudentID @studentID = 1, @hash = 'xyz123';
+﻿USE [Student-Attendance-System]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_InsertHashAndStudentID]    Script Date: 2/5/2026 3:08:14 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE OR ALTER PROC [dbo].[sp_InsertHashAndStudentID]
+    @studentID INT,
+    @hash VARCHAR(300)
+AS
+BEGIN
+    SET NOCOUNT ON;
+ 
+    DECLARE @hashid INT;
+ 
+    IF EXISTS (
+        SELECT 1
+        FROM dbo.hashtable
+        WHERE studentID = @studentID
+    )
+    BEGIN
+        THROW 50001, 'The student is already registered', 1;
+    END
+    ELSE
+    BEGIN
+        INSERT INTO dbo.hashtable (studentID, hash)
+        VALUES (@studentID, @hash);
+ 
+        SET @hashid = CAST(SCOPE_IDENTITY() AS INT);
+ 
+        SELECT 
+            @hashid AS id,
+            @hash AS hash,
+            @studentID AS studentID;
+    END
+END;

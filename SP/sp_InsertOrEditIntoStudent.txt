@@ -1,26 +1,66 @@
-﻿create or alter proc sp_InsertOrEditIntoStudent
-	@id int = 0,
-	@name varchar(100),
-	@roll_no int,
-	@section varchar(25),
-	@class varchar(50)
-as
-begin
-	if @id = 0
-	begin
-		insert into dbo.student (name,roll_no,section,class)
-		values(@name,@roll_no,@section,@class)
-
-		SELECT CAST(SCOPE_IDENTITY() AS INT) AS StudentID;
-	end
-	else
-	begin
-		update dbo.student
-		set name = @name,
-			roll_no = @roll_no ,
-			section = @section,
-			class = @class
-		where id = @id;
-	end
-
-end;
+﻿USE [Student-Attendance-System]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_InsertOrEditIntoStudent]    Script Date: 2/5/2026 2:40:58 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER   PROC [dbo].[sp_InsertOrEditIntoStudent]
+    @id INT = 0,
+    @name VARCHAR(100),
+    @roll_no INT,
+    @section VARCHAR(25),
+    @class VARCHAR(50)
+AS
+BEGIN
+    SET NOCOUNT ON;
+ 
+    BEGIN TRY
+        -- insert
+        IF @id = 0
+        BEGIN
+            IF EXISTS (
+                SELECT 1
+                FROM dbo.student
+                WHERE roll_no = @roll_no
+                  AND section = @section
+                  AND class = @class
+            )
+            BEGIN
+                THROW 50001, 'Student with same roll number already exists in this class and section', 1;
+            END
+ 
+            INSERT INTO dbo.student (name, roll_no, section, class)
+            VALUES (@name, @roll_no, @section, @class);
+ 
+            SELECT CAST(SCOPE_IDENTITY() AS INT) AS StudentID;
+        END
+        -- edit
+        ELSE
+        BEGIN
+            IF EXISTS (
+                SELECT 1
+                FROM dbo.student
+                WHERE roll_no = @roll_no
+                  AND section = @section
+                  AND class = @class
+                  AND id <> @id
+            )
+            BEGIN
+                THROW 50002, 'Another student already has this roll number in the same class and section', 1;
+            END
+ 
+            UPDATE dbo.student
+            SET name = @name,
+                roll_no = @roll_no,
+                section = @section,
+                class = @class
+            WHERE id = @id;
+ 
+            SELECT @id AS StudentID;
+        END
+    END TRY
+    BEGIN CATCH
+        THROW;
+    END CATCH
+END;

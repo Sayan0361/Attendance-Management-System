@@ -24,6 +24,18 @@ namespace Attendance_Management_System.DAL
             }
         }
 
+        public static T ExecuteWithReturn<T>(string procName, DynamicParameters param = null)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                return (T)Convert.ChangeType(
+                        connection.Execute(procName, param, commandType: CommandType.StoredProcedure),
+                        typeof(T)
+                    );
+            }
+        }
+
         public static T ExecuteReturnScalar<T>(string procName, DynamicParameters param = null)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -36,7 +48,20 @@ namespace Attendance_Management_System.DAL
             }
         }
 
-        
+        public static T ReturnSingle<T>(string procName, DynamicParameters param = null)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                return connection.QuerySingle<T>(
+                    procName,
+                    param,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+        }
+
+
+
         public static IEnumerable<T> ReturnList<T>(string procName, DynamicParameters param = null)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))

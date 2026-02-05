@@ -34,6 +34,7 @@
 
             <div class="card-body p-4">
                 <form id="regForm">
+                    @Html.AntiForgeryToken()
 
                     <div class="mb-3">
                         <label class="form-label text-white fw-light small text-uppercase ls-1">Name</label>
@@ -89,6 +90,8 @@
         </div>
     </div>
 </div>
+<div id="modalContainer"></div>
+
 
 <style>
     /* --- 1. Base & Fonts --- */
@@ -298,28 +301,36 @@
 
             // AJAX Request
             $.ajax({
-                url: '@Url.Action("RegisterStudent", "Attendance")', // Make sure this Action exists
+                url: '@Url.Action("Register", "Student")',
                 type: 'POST',
                 data: {
-                    Name: name,
-                    Class: stuClass,
-                    Section: section,
-                    RollNo: rollNo
+                    name: name,
+                    roll_no: rollNo,
+                    section: section,
+                    _class: stuClass,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
                 },
-                success: function (response) {
-                    resultDiv.removeClass('text-danger').addClass('text-success')
-                             .html('<i class="fa-solid fa-check-circle"></i> Registration Successful!').fadeIn();
-
-                    // Clear inputs
+                success: function (html) {
+                    $('#modalContainer').html(html);
+                    $('#registerModal').modal('show');
                     $('#regForm input').val('');
                 },
-                error: function () {
+                error: function (xhr, status, error) {
+                    console.error('Error:', xhr.responseText);
                     resultDiv.removeClass('text-success').addClass('text-danger')
-                             .html('<i class="fa-solid fa-triangle-exclamation"></i> Submission Failed').fadeIn();
+                             .html('<i class="fa-solid fa-triangle-exclamation"></i> Submission Failed: ' + xhr.status).fadeIn();
                 },
                 complete: function() {
                     btn.prop('disabled', false).html(originalBtnText);
                 }
+            });
+
+            $(document).on('click', '#okBtn', function () {
+                console.log('OK button clicked');
+                $('#registerModal').modal('hide');
+                setTimeout(function() {
+                    window.location.href = '@Url.Action("Index", "Attendance")';
+                }, 300);
             });
         });
 
