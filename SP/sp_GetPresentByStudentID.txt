@@ -1,0 +1,15 @@
+﻿USE [Student-Attendance-System]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_GetPresentByStudentID]    Script Date: 2/9/2026 12:03:26 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER PROC [dbo].[sp_GetPresentByStudentID]
+@id INT
+AS
+    SET NOCOUNT ON;
+BEGIN
+ SELECT COUNT(*) FROM attendance WHERE id = @id AND status LIKE 'PRESENT';
+END

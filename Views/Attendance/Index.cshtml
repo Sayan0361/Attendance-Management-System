@@ -61,6 +61,11 @@
                         <span class="btn-text">Mark Present</span>
                         <i class="fa-solid fa-check-circle ms-2"></i>
                     </button>
+
+                    <button type="button" id="btnAnalyticsSubmit" class="btn btn-gradient btn-lg text-white shadow fw-bold">
+                        <span class="btn-text">View Analytics</span>
+                        <i class="fa-solid fa-paper-plane ms-2"></i>
+                    </button>
                 </div>
 
                 <div id="result" class="mt-4 text-center fw-semibold result-box" style="min-height: 25px;"></div>
@@ -328,84 +333,92 @@
 
 <script>
     $(document).ready(function () {
-        // [Existing Logic preserved]
+    // [Existing Logic preserved]
 
-        $('#btnRegister').click(function (e) {
-            e.preventDefault();
-            var btn = $(this);
-            var originalHtml = btn.html();
-            btn.html('<i class="fa-solid fa-spinner fa-spin"></i>');
+    $('#btnRegister').click(function (e) {
+        e.preventDefault();
+        var btn = $(this);
+        var originalHtml = btn.html();
+        btn.html('<i class="fa-solid fa-spinner fa-spin"></i>');
 
-            window.location.href = '@Url.Action("Index", "Student")';
-            @*$.ajax({
-                url: '@Url.Action("Index", "Student")',
-                type: 'GET',
-                success: function () {
-                     // Replace with actual redirect logic
-                     alert('Redirecting to Register...');
-                     btn.html(originalHtml);
-                },
-                error: function () {
-                    alert('Error loading registration');
-                    btn.html(originalHtml);
-                }
-            });*@
-        });
-
-        $('#btnMark').click(function () {
-            var btn = $(this);
-            var regNo = $('#regNo').val().trim();
-            var resultDiv = $('#result');
-
-            console.log("RegNo: ", regNo)
-
-            resultDiv.hide().removeClass('text-danger text-success');
-
-            if (regNo === '') {
-                resultDiv.text('Please enter Registration ID').addClass('text-danger').fadeIn();
-                // Add shake animation to card
-                $('.glass-card').addClass('border-danger');
-                setTimeout(() => $('.glass-card').removeClass('border-danger'), 500);
-                return;
-            }
-
-            var originalBtnText = btn.html();
-            btn.prop('disabled', true).html('<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...');
-
-            $.ajax({
-                url: '@Url.Action("Mark", "Attendance")',
-                type: 'POST',
-                data: {
-                    id: regNo,
-                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                },
-                success: function (response) {
-
-                    console.log("Response: ", response);
-                    // Populate modal with attendance data
-                    $('#attendanceStatus').text('Status: ' + (response.status || 'Present'));
-                    $('#attendanceTime').text('Time: ' + (response.in_time || 'N/A'));
-                    $('#attendanceDate').text('Date: ' + (response.date ? new Date(response.date).toLocaleDateString() : 'N/A'));
-
-                    // Show modal
-                    var attendanceModal = new bootstrap.Modal(document.getElementById('attendanceModal'));
-                    attendanceModal.show();
-
-                    $('#regNo').val('');
-                },
-                error: function (er) {
-                    console.log(er)
-                    resultDiv.removeClass('text-success').addClass('text-danger')
-                             .html('<i class="fa-solid fa-triangle-exclamation"></i> Failed').fadeIn();
-                },
-                complete: function() {
-                    btn.prop('disabled', false).html(originalBtnText);
-                }
-            });
-        });
-
-        //$('#regNo').keypress(function(e){
-        //    if(e.which == 13) $('#btnMark').click();
-        //});
+        window.location.href = '@Url.Action("Index", "Student")';
     });
+
+    $('#btnMark').click(function () {
+        var btn = $(this);
+        var regNo = $('#regNo').val().trim();
+        var resultDiv = $('#result');
+
+        console.log("RegNo: ", regNo)
+
+        resultDiv.hide().removeClass('text-danger text-success');
+
+        if (regNo === '') {
+            resultDiv.text('Please enter Registration ID').addClass('text-danger').fadeIn();
+            $('.glass-card').addClass('border-danger');
+            setTimeout(() => $('.glass-card').removeClass('border-danger'), 500);
+            return;
+        }
+
+        var originalBtnText = btn.html();
+        btn.prop('disabled', true).html('<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...');
+
+        $.ajax({
+            url: '@Url.Action("Mark", "Attendance")',
+            type: 'POST',
+            data: {
+                id: regNo,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (response) {
+                console.log("Response: ", response);
+                $('#attendanceStatus').text('Status: ' + (response.status || 'Present'));
+                $('#attendanceTime').text('Time: ' + (response.in_time || 'N/A'));
+                $('#attendanceDate').text('Date: ' + (response.date ? new Date(response.date).toLocaleDateString() : 'N/A'));
+
+                var attendanceModal = new bootstrap.Modal(document.getElementById('attendanceModal'));
+                attendanceModal.show();
+
+                $('#regNo').val('');
+            },
+            error: function (er) {
+                console.log(er)
+                resultDiv.removeClass('text-success').addClass('text-danger')
+                         .html('<i class="fa-solid fa-triangle-exclamation"></i> Failed').fadeIn();
+            },
+            complete: function() {
+                btn.prop('disabled', false).html(originalBtnText);
+            }
+        });
+    });
+
+    $('#btnAnalyticsSubmit').click(function () {
+        var regNo = $('#regNo').val().trim();
+
+        if (regNo === '') {
+            alert('Please enter Registration ID');
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("Analytics", "Student")',
+            data: {
+                id: regNo
+            },
+            type: 'GET',
+            success: function (html) {
+                $('#modalContainer').html(html);
+                // If the analytics view returns a modal with id 'analyticsModal'
+                //var analyticsModal = new bootstrap.Modal(document.getElementById('analyticsModal'));
+                //analyticsModal.show();
+                window.location.href = '@Url.Action("Analytics", "Student")'
+                            + '?id=' + regNo;
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', xhr.responseText);
+                alert('Failed to load analytics. Please try again later.');
+            }
+        });
+    });
+});
 </script>

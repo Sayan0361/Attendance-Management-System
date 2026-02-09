@@ -1,0 +1,10 @@
+﻿CREATE OR ALTER PROCEDURE sp_GetRegisteredDate
+    @id INT
+AS
+BEGIN
+    SELECT s.registration_date
+    FROM hashtable h
+    INNER JOIN student s ON s.id = h.studentId
+    WHERE h.id = @id;
+END
+GO

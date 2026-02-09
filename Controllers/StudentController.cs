@@ -51,5 +51,53 @@ namespace Attendance_Management_System.Controllers
             return BCrypt.Net.BCrypt.HashPassword(model.name + model.roll_no + model.section + model._class + studentID.ToString());
         }
 
+        [HttpGet]
+        public ActionResult Analytics(int id)
+        {
+            var param = new DynamicParameters();
+            param.Add("@id", id);
+            int lateDays = DapperContext.ExecuteReturnScalar<int>("sp_GetLateByStudentID", param);
+            int presentDays = DapperContext.ExecuteReturnScalar<int>("sp_GetPresentByStudentID", param);
+            DateTime startDate = DapperContext.ExecuteReturnScalar<DateTime>("sp_GetRegisteredDate", param);
+            int totalDays = CalculateTotalDays(startDate);
+            AnalyticsViewModel model = new AnalyticsViewModel
+            {
+                Id = id,
+                TotalDays = totalDays,
+                PresentDays = presentDays,
+                LateDays = lateDays,
+                AbsentDays = totalDays - (presentDays + lateDays)
+            };
+            //var result = new
+            //{
+            //    StudentId = studentID,
+            //    TotalDays = totalDays,
+            //    PresentDays = presentDays,
+            //    LateDays = lateDays,
+            //    AbsentDays = totalDays - (presentDays + lateDays)
+            //};
+
+            return View(model);
+        }
+
+
+        public int CalculateTotalDays(DateTime startDate)
+        {
+            DateTime endDate = DateTime.Now.Date;
+            int totalDays = 0;
+            
+            for (DateTime date = startDate.Date; date <= endDate; date = date.AddDays(1))
+            {
+                // Exclude weekends (Saturday = 6, Sunday = 0)
+                if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    totalDays++;
+                }
+            }
+            return totalDays;
+        }
+
     }
+
+
 }

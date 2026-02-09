@@ -140,6 +140,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AnalyticsViewModel.cs" />
     <Compile Include="Models\AttendanceModel.cs" />
     <Compile Include="Models\HashTableModel.cs" />
     <Compile Include="Models\StudentModel.cs" />
@@ -184,6 +185,9 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="SP\CreateTables.txt" />
+    <Content Include="SP\sp_GetLateByStudentID.txt" />
+    <Content Include="SP\sp_GetPresentByStudentID.txt" />
+    <Content Include="SP\sp_GetRegisteredDate.txt" />
     <Content Include="SP\sp_insertAttendance.txt" />
     <Content Include="SP\sp_InsertHashAndStudentID.txt" />
     <Content Include="SP\sp_InsertOrEditIntoStudent.txt" />
@@ -199,6 +203,7 @@
     <Content Include="Views\Student\_UserMessageModal.cshtml" />
     <Content Include="Views\Attendance\Mark.cshtml" />
     <Content Include="Web.config" />
+    <Content Include="Views\Student\Analytics.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
