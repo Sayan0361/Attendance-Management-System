@@ -187,13 +187,6 @@
     <Content Include="SP\sp_insertAttendance.txt" />
     <Content Include="SP\sp_InsertHashAndStudentID.txt" />
     <Content Include="SP\sp_InsertOrEditIntoStudent.txt" />
-    <Content Include="Web.config" />
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
@@ -205,6 +198,13 @@
     <Content Include="Views\Student\Index.cshtml" />
     <Content Include="Views\Student\_UserMessageModal.cshtml" />
     <Content Include="Views\Attendance\Mark.cshtml" />
+    <Content Include="Web.config" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

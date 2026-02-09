@@ -12,5 +12,6 @@ namespace Attendance_Management_System.Models
         public int roll_no { get; set; }
         public string section { get; set; }
         public string _class { get; set; }
+        public DateTime registration_date { get; set; }
     }
 }
