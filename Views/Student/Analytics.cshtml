@@ -1,52 +1,489 @@
 ﻿@model Attendance_Management_System.Models.AnalyticsViewModel
 
-<div>
-    <h4>AnalyticsViewModel</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.LateDays)
-        </dt>
+@{
+    ViewBag.Title = "Student Analytics";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-        <dd>
-            @Html.DisplayFor(model => model.LateDays)
-        </dd>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.PresentDays)
-        </dt>
+<div class="animated-background">
+    <ul class="circles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>   
+    
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; position: relative; z-index: 10; padding: 20px 0;">
+        <div class="card glass-card shadow-lg w-100" style="max-width: 900px;">
+            
+            <!-- Header -->
+            <div class="card-header border-0 text-center pt-4 bg-transparent">
+                <div class="icon-wrapper mb-3">
+                    <i class="fa-solid fa-chart-line fa-2x"></i>
+                </div>
+                <h3 class="fw-bold text-white tracking-wide">Student Analytics</h3>
+                <p class="text-white-50 small mb-0">@Html.DisplayFor(model => model.Name)</p>
+            </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.PresentDays)
-        </dd>
+            <!-- Body -->
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <!-- Chart Section -->
+                    <div class="col-lg-6 d-flex align-items-center justify-content-center">
+                        <div style="position: relative; width: 100%; height: 300px;">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.AbsentDays)
-        </dt>
+                    <!-- Stats Section -->
+                    <div class="col-lg-6">
+                        <div class="row g-3">
+                            <!-- Present Days -->
+                            <div class="col-12">
+                                <div class="stat-card present-card">
+                                    <div class="stat-icon">
+                                        <i class="fa-solid fa-check-circle"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <p class="stat-label">Present Days</p>
+                                        <h4 class="stat-value">@Html.DisplayFor(model => model.PresentDays)</h4>
+                                    </div>
+                                </div>
+                            </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.AbsentDays)
-        </dd>
+                            <!-- Absent Days -->
+                            <div class="col-12">
+                                <div class="stat-card absent-card">
+                                    <div class="stat-icon">
+                                        <i class="fa-solid fa-times-circle"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <p class="stat-label">Absent Days</p>
+                                        <h4 class="stat-value">@Html.DisplayFor(model => model.AbsentDays)</h4>
+                                    </div>
+                                </div>
+                            </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.TotalDays)
-        </dt>
+                            <!-- Late Days -->
+                            <div class="col-12">
+                                <div class="stat-card late-card">
+                                    <div class="stat-icon">
+                                        <i class="fa-solid fa-clock"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <p class="stat-label">Late Days</p>
+                                        <h4 class="stat-value">@Html.DisplayFor(model => model.LateDays)</h4>
+                                    </div>
+                                </div>
+                            </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.TotalDays)
-        </dd>
+                            <!-- Total Days -->
+                            <div class="col-12">
+                                <div class="stat-card total-card">
+                                    <div class="stat-icon">
+                                        <i class="fa-solid fa-calendar"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <p class="stat-label">Total Days</p>
+                                        <h4 class="stat-value">@Html.DisplayFor(model => model.TotalDays)</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
+                <!-- Attendance Percentage -->
+                <div class="mt-4 pt-3 border-top border-white-50">
+                    @{
+                        decimal percentage = Model.TotalDays > 0 ? Math.Round((decimal)Model.PresentDays / Model.TotalDays * 100, 2) : 0;
+                    }
+                    <p class="text-white-50 small mb-2">Overall Attendance Percentage</p>
+                    <div class="progress" style="height: 10px; background-color: rgba(255,255,255,0.1); border-radius: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @(percentage)%; background: linear-gradient(90deg, #4caf50 0%, #45a049 100%) !important; border-radius: 10px;" 
+                             aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <p class="text-white fw-bold mt-3 text-center" style="font-size: 1.5rem;">@(percentage)%</p>
+                </div>
+            </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-
-    </dl>
+            <!-- Footer -->
+            <div class="card-footer border-0 bg-transparent text-center pb-3">
+                <div class="d-flex gap-2 justify-content-center">
+                    <a href="@Url.Action("Index", "Attendance")" class="btn btn-sm btn-gradient text-white fw-bold">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+<style>
+    /* --- 1. Base & Fonts --- */
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        overflow-x: hidden;
+    }
+
+    /* --- 2. Animated Background --- */
+    .animated-background {
+        background: linear-gradient(to left, #0f2027, #203a43, #2c5364);
+        width: 100%;
+        min-height: 100vh;
+        position: relative;
+        background-size: 400% 400%;
+        animation: gradientBG 15s ease infinite;
+    }
+
+    @@keyframes gradientBG {
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
+    /* --- 3. Floating Particles --- */
+    .circles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        z-index: 1;
+    }
+
+        .circles li {
+            position: absolute;
+            display: block;
+            list-style: none;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            animation: floatUp 25s linear infinite;
+            bottom: -150px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+            .circles li:nth-child(1) {
+                left: 25%;
+                width: 80px;
+                height: 80px;
+                animation-delay: 0s;
+            }
+
+            .circles li:nth-child(2) {
+                left: 10%;
+                width: 20px;
+                height: 20px;
+                animation-delay: 2s;
+                animation-duration: 12s;
+            }
+
+            .circles li:nth-child(3) {
+                left: 70%;
+                width: 20px;
+                height: 20px;
+                animation-delay: 4s;
+            }
+
+            .circles li:nth-child(4) {
+                left: 40%;
+                width: 60px;
+                height: 60px;
+                animation-delay: 0s;
+                animation-duration: 18s;
+            }
+
+            .circles li:nth-child(5) {
+                left: 65%;
+                width: 20px;
+                height: 20px;
+                animation-delay: 0s;
+            }
+
+            .circles li:nth-child(6) {
+                left: 75%;
+                width: 110px;
+                height: 110px;
+                animation-delay: 3s;
+            }
+
+            .circles li:nth-child(7) {
+                left: 35%;
+                width: 150px;
+                height: 150px;
+                animation-delay: 7s;
+            }
+
+            .circles li:nth-child(8) {
+                left: 50%;
+                width: 25px;
+                height: 25px;
+                animation-delay: 15s;
+                animation-duration: 45s;
+            }
+
+            .circles li:nth-child(9) {
+                left: 20%;
+                width: 15px;
+                height: 15px;
+                animation-delay: 2s;
+                animation-duration: 35s;
+            }
+
+            .circles li:nth-child(10) {
+                left: 85%;
+                width: 150px;
+                height: 150px;
+                animation-delay: 0s;
+                animation-duration: 11s;
+            }
+
+    @@keyframes floatUp {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+            border-radius: 0;
+        }
+
+        100% {
+            transform: translateY(-1000px) rotate(720deg);
+            opacity: 0;
+            border-radius: 50%;
+        }
+    }
+
+    /* --- 4. Glass Card --- */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    }
+
+    /* --- 5. UI Elements --- */
+    .icon-wrapper {
+        color: #00d2ff;
+        text-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+    }
+
+    .tracking-wide {
+        letter-spacing: 1px;
+    }
+
+    /* Stat Cards */
+    .stat-card {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 15px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.3s ease;
+    }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+    .stat-icon {
+        font-size: 1.75rem;
+        flex-shrink: 0;
+    }
+
+    .present-card .stat-icon {
+        color: #4caf50;
+        text-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+    }
+
+    .absent-card .stat-icon {
+        color: #f44336;
+        text-shadow: 0 0 15px rgba(244, 67, 54, 0.6);
+    }
+
+    .late-card .stat-icon {
+        color: #ff9800;
+        text-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
+    }
+
+    .total-card .stat-icon {
+        color: #2196f3;
+        text-shadow: 0 0 15px rgba(33, 150, 243, 0.6);
+    }
+
+    .stat-content {
+        flex-grow: 1;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.75rem;
+        margin-bottom: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        color: white;
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.5rem;
+    }
+
+    /* Chart Container */
+    #attendanceChart {
+        max-width: 100%;
+    }
+
+    /* Buttons */
+    .btn-gradient {
+        background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+        border: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 25px rgba(0, 210, 255, 0.6);
+            color: white;
+        }
+
+        .btn-gradient:active {
+            transform: scale(0.98);
+        }
+
+    /* Utilities */
+    .border-white-50 {
+        border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    .text-white-50 {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .stat-icon {
+            font-size: 1.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+        }
+
+        .glass-card {
+            max-width: 100% !important;
+        }
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Initialize Chart.js Donut Chart
+        const ctx = document.getElementById('attendanceChart').getContext('2d');
+        
+        const presentDays = @Html.Raw(Model.PresentDays);
+        const absentDays = @Html.Raw(Model.AbsentDays);
+        const lateDays = @Html.Raw(Model.LateDays);
+
+        const attendanceChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Present', 'Absent', 'Late'],
+                datasets: [{
+                    data: [presentDays, absentDays, lateDays],
+                    backgroundColor: [
+                        '#4caf50',  // Green for Present
+                        '#f44336',  // Red for Absent
+                        '#ff9800'   // Orange for Late
+                    ],
+                    borderColor: [
+                        'rgba(76, 175, 80, 0.3)',
+                        'rgba(244, 67, 54, 0.3)',
+                        'rgba(255, 152, 0, 0.3)'
+                    ],
+                    borderWidth: 2,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            font: {
+                                family: "'Poppins', sans-serif",
+                                size: 13,
+                                weight: '500'
+                            },
+                            padding: 20,
+                            usePointStyle: true
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1,
+                        padding: 10,
+                        titleFont: {
+                            family: "'Poppins', sans-serif",
+                            size: 13,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            family: "'Poppins', sans-serif",
+                            size: 12
+                        },
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + ' days';
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: false,
+                    duration: 800
+                }
+            }
+        });
+    });
+</script>

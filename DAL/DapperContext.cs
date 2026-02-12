@@ -36,7 +36,7 @@ namespace Attendance_Management_System.DAL
             }
         }
 
-        public static T ExecuteReturnScalar<T>(string procName, DynamicParameters param = null)
+        public static T ExecuteReturnScalar<T>(string procName, DynamicParameters param)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
