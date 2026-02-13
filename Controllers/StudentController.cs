@@ -56,26 +56,30 @@ namespace Attendance_Management_System.Controllers
         {
             var param = new DynamicParameters();
             param.Add("@id", id);
+            
             int lateDays = DapperContext.ExecuteReturnScalar<int>("sp_GetLateByStudentID", param);
             int presentDays = DapperContext.ExecuteReturnScalar<int>("sp_GetPresentByStudentID", param);
             DateTime startDate = DapperContext.ExecuteReturnScalar<DateTime>("sp_GetRegisteredDate", param);
             int totalDays = CalculateTotalDays(startDate);
+            
+            // Get student details
+            var studentDetailsParam = new DynamicParameters();
+            studentDetailsParam.Add("@id", id);
+            var studentDetails = DapperContext.ReturnSingle<StudentDetailsViewModel>("sp_GetStudentDetailsByID", studentDetailsParam);
+            
             AnalyticsViewModel model = new AnalyticsViewModel
             {
                 Id = id,
                 TotalDays = totalDays,
                 PresentDays = presentDays,
                 LateDays = lateDays,
-                AbsentDays = totalDays - (presentDays + lateDays)
+                AbsentDays = totalDays - (presentDays + lateDays),
+                Name = studentDetails?.name ?? "N/A",
+                _class = studentDetails?._class ?? "12",
+                Roll_No = studentDetails?.roll_no ?? 0,
+                Section = studentDetails?.section ?? "N/A",
+                Registration_Date = studentDetails?.registration_date ?? DateTime.Now
             };
-            //var result = new
-            //{
-            //    StudentId = studentID,
-            //    TotalDays = totalDays,
-            //    PresentDays = presentDays,
-            //    LateDays = lateDays,
-            //    AbsentDays = totalDays - (presentDays + lateDays)
-            //};
 
             return View(model);
         }
@@ -97,6 +101,14 @@ namespace Attendance_Management_System.Controllers
             return totalDays;
         }
 
+        public ActionResult StudentDetailsByID(int id)
+        {
+            var param = new DynamicParameters();
+            param.Add("@id", id);
+            var sp = "sp_GetStudentDetailsByID";
+            var result = DapperContext.ReturnSingle<StudentDetailsViewModel>(sp);
+            return View(result);
+        }
     }
 
 

@@ -14,4 +14,14 @@ namespace Attendance_Management_System.Models
         public string _class { get; set; }
         public DateTime registration_date { get; set; }
     }
+
+    public class StudentDetailsViewModel
+    {
+        public string name { get; set; }
+        public int roll_no { get; set; }
+        public string section { get; set; }
+        public string _class { get; set; }
+        public DateTime registration_date { get; set; }
+        public int registration_id { get; set; }
+    }
 }

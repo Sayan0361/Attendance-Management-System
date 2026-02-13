@@ -22,11 +22,11 @@
         <li></li>
         <li></li>
         <li></li>
-    </ul>   
+    </ul>
     
     <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; position: relative; z-index: 10; padding: 20px 0;">
-        <div class="card glass-card shadow-lg w-100" style="max-width: 900px;">
-            
+        <div class="card glass-card shadow-lg w-100" style="max-width: 1000px;">
+
             <!-- Header -->
             <div class="card-header border-0 text-center pt-4 bg-transparent">
                 <div class="icon-wrapper mb-3">
@@ -36,7 +36,61 @@
                 <p class="text-white-50 small mb-0">@Html.DisplayFor(model => model.Name)</p>
             </div>
 
-            <!-- Body -->
+            <!-- Student Details Section -->
+            <div class="card-body p-4 border-bottom border-white-50 text-white">
+                <div class="row g-3">
+                    <div class="col-md-6 col-lg-4">
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                <i class="fa-solid fa-id-card me-2"></i> Registration ID
+                            </span>
+                            <span class="detail-value">@Html.DisplayFor(model => model.Id)</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                <i class="fa-solid fa-user me-2"></i> Full Name
+                            </span>
+                            <span class="detail-value">@Html.DisplayFor(model => model.Name)</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                <i class="fa-solid fa-list-ol me-2"></i> Roll Number
+                            </span>
+                            <span class="detail-value">@Html.DisplayFor(model => model.Roll_No)</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                <i class="fa-solid fa-book me-2"></i> Class
+                            </span>
+                            <span class="detail-value">@Html.DisplayFor(model => model._class)</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                <i class="fa-solid fa-layer-group me-2"></i> Section
+                            </span>
+                            <span class="detail-value">@Html.DisplayFor(model => model.Section)</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="detail-item">
+                            <span class="detail-label">
+                                <i class="fa-solid fa-calendar-check me-2"></i> Registered Date
+                            </span>
+                            <span class="detail-value">@Html.DisplayFor(model => model.Registration_Date, new { htmlAttributes = new { @class = "text-nowrap" } })</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
             <div class="card-body p-4">
                 <div class="row g-4">
                     <!-- Chart Section -->
@@ -107,11 +161,11 @@
                 <!-- Attendance Percentage -->
                 <div class="mt-4 pt-3 border-top border-white-50">
                     @{
-                        decimal percentage = Model.TotalDays > 0 ? Math.Round((decimal)Model.PresentDays / Model.TotalDays * 100, 2) : 0;
+                        decimal percentage = Model.TotalDays > 0 ? Math.Round((decimal)(Model.PresentDays + Model.LateDays) / Model.TotalDays * 100, 2) : 0;
                     }
                     <p class="text-white-50 small mb-2">Overall Attendance Percentage</p>
                     <div class="progress" style="height: 10px; background-color: rgba(255,255,255,0.1); border-radius: 10px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: @(percentage)%; background: linear-gradient(90deg, #4caf50 0%, #45a049 100%) !important; border-radius: 10px;" 
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @(percentage)%; background: linear-gradient(90deg, #4caf50 0%, #45a049 100%) !important; border-radius: 10px;"
                              aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <p class="text-white fw-bold mt-3 text-center" style="font-size: 1.5rem;">@(percentage)%</p>
@@ -121,7 +175,7 @@
             <!-- Footer -->
             <div class="card-footer border-0 bg-transparent text-center pb-3">
                 <div class="d-flex gap-2 justify-content-center">
-                    <a href="@Url.Action("Index", "Attendance")" class="btn btn-sm btn-gradient text-white fw-bold">
+                    <a href="@Url.Action("Index", "Student")" class="btn btn-sm btn-gradient text-white fw-bold">
                         <i class="fa-solid fa-arrow-left me-1"></i> Back
                     </a>
                 </div>
@@ -298,6 +352,28 @@
         letter-spacing: 1px;
     }
 
+    /* Student Details */
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 0;
+    }
+
+    .detail-label {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+
+    .detail-value {
+        color: #00d2ff;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
     /* Stat Cards */
     .stat-card {
         background: rgba(255, 255, 255, 0.08);
@@ -403,6 +479,10 @@
 
         .glass-card {
             max-width: 100% !important;
+        }
+
+        .detail-value {
+            font-size: 0.9rem;
         }
     }
 </style>
